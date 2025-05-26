@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block title %}Habitación {{ habitacion.numero }} - ReservaFácil{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-bed me-2"></i>Habitación {{ habitacion.numero }}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Información General</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Número:</strong></td>
+                                    <td>{{ habitacion.numero }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Tipo:</strong></td>
+                                    <td><span class="badge bg-info">{{ habitacion.get_tipo_display }}</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Capacidad:</strong></td>
+                                    <td><i class="fas fa-users me-1"></i>{{ habitacion.capacidad }} personas</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Precio por noche:</strong></td>
+                                    <td><strong class="text-success">{{ habitacion.precio_formateado }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Estado:</strong></td>
+                                    <td>
+                                        {% if habitacion.estado == 'disponible' %}
+                                            <span class="badge bg-success">{{ habitacion.get_estado_display }}</span>
+                                        {% elif habitacion.estado == 'ocupada' %}
+                                            <span class="badge bg-danger">{{ habitacion.get_estado_display }}</span>
+                                        {% elif habitacion.estado == 'reservada' %}
+                                            <span class="badge bg-warning">{{ habitacion.get_estado_display }}</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ habitacion.get_estado_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Fechas</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Creada:</strong></td>
+                                    <td>{{ habitacion.fecha_creacion|date:"d/m/Y H:i" }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Última actualización:</strong></td>
+                                    <td>{{ habitacion.fecha_actualizacion|date:"d/m/Y H:i" }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    {% if habitacion.servicios_incluidos %}
+                    <div class="mt-4">
+                        <h5><i class="fas fa-concierge-bell me-2"></i>Servicios Incluidos</h5>
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <p class="card-text">{{ habitacion.servicios_incluidos|linebreaks }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if habitacion.descripcion %}
+                    <div class="mt-4">
+                        <h5><i class="fas fa-align-left me-2"></i>Descripción</h5>
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <p class="card-text">{{ habitacion.descripcion|linebreaks }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="fas fa-cogs me-2"></i>Acciones</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'habitaciones:editar' habitacion.pk %}" class="btn btn-warning">
+                            <i class="fas fa-edit me-2"></i>Editar Habitación
+                        </a>
+                        <a href="{% url 'habitaciones:eliminar' habitacion.pk %}" class="btn btn-danger">
+                            <i class="fas fa-trash me-2"></i>Eliminar Habitación
+                        </a>
+                        <hr>
+                        <a href="{% url 'habitaciones:lista' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Volver a la Lista
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Estadísticas rápidas -->
+            <div class="card shadow mt-3">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Estado de Disponibilidad</h6>
+                </div>
+                <div class="card-body">
+                    {% if habitacion.esta_disponible %}
+                        <div class="text-center">
+                            <i class="fas fa-check-circle fa-3x text-success mb-2"></i>
+                            <p class="text-success"><strong>Habitación Disponible</strong></p>
+                            <small class="text-muted">Lista para nuevas reservas</small>
+                        </div>
+                    {% else %}
+                        <div class="text-center">
+                            {% if habitacion.estado == 'ocupada' %}
+                                <i class="fas fa-user-check fa-3x text-danger mb-2"></i>
+                                <p class="text-danger"><strong>Habitación Ocupada</strong></p>
+                                <small class="text-muted">Actualmente en uso</small>
+                            {% elif habitacion.estado == 'reservada' %}
+                                <i class="fas fa-calendar-check fa-3x text-warning mb-2"></i>
+                                <p class="text-warning"><strong>Habitación Reservada</strong></p>
+                                <small class="text-muted">Reserva pendiente</small>
+                            {% else %}
+                                <i class="fas fa-tools fa-3x text-secondary mb-2"></i>
+                                <p class="text-secondary"><strong>En Mantenimiento</strong></p>
+                                <small class="text-muted">No disponible temporalmente</small>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

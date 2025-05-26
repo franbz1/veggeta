@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}Eliminar Habitación {{ object.numero }} - ReservaFácil{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Confirmar Eliminación
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-warning me-2"></i>
+                        <strong>¡Atención!</strong> Esta acción no se puede deshacer.
+                    </div>
+                    
+                    <p class="lead">¿Estás seguro de que deseas eliminar la siguiente habitación?</p>
+                    
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="fas fa-bed me-2"></i>Habitación {{ object.numero }}
+                            </h5>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <p class="card-text">
+                                        <strong>Tipo:</strong> {{ object.get_tipo_display }}<br>
+                                        <strong>Capacidad:</strong> {{ object.capacidad }} personas<br>
+                                        <strong>Precio:</strong> {{ object.precio_formateado }}
+                                    </p>
+                                </div>
+                                <div class="col-sm-6">
+                                    <p class="card-text">
+                                        <strong>Estado:</strong> 
+                                        {% if object.estado == 'disponible' %}
+                                            <span class="badge bg-success">{{ object.get_estado_display }}</span>
+                                        {% elif object.estado == 'ocupada' %}
+                                            <span class="badge bg-danger">{{ object.get_estado_display }}</span>
+                                        {% elif object.estado == 'reservada' %}
+                                            <span class="badge bg-warning">{{ object.get_estado_display }}</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ object.get_estado_display }}</span>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            {% if object.servicios_incluidos %}
+                                <p class="card-text">
+                                    <strong>Servicios:</strong> {{ object.servicios_incluidos|truncatewords:10 }}
+                                </p>
+                            {% endif %}
+                            
+                            {% if object.descripcion %}
+                                <p class="card-text">
+                                    <strong>Descripción:</strong> {{ object.descripcion|truncatewords:15 }}
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <form method="post" class="mt-4">
+                        {% csrf_token %}
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'habitaciones:lista' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash me-2"></i>Sí, Eliminar Habitación
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-muted">
+                    <small>
+                        <i class="fas fa-clock me-1"></i>
+                        Creada: {{ object.fecha_creacion|date:"d/m/Y H:i" }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
